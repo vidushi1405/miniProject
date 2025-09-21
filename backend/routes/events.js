@@ -1,16 +1,25 @@
 // events.js
+// routes/events.js
 const express = require("express");
 const router = express.Router();
-const Event = require("../models/Event"); // Ensure Event model bana hua ho
+const auth = require("../middleware/authMiddleware");
+const role = require("../middleware/roleMiddleware");
+const {
+  getEvents,
+  getEvent,
+  createEvent,
+  editEvent,
+  deleteEvent
+} = require("../controllers/eventController");
 
-// GET all events
-router.get("/", async (req, res) => {
-  try {
-    const events = await Event.find();
-    res.json(events);
-  } catch (err) {
-    res.status(500).json({ message: "Failed to fetch events" });
-  }
-});
+// Public routes
+router.get("/", getEvents);
+router.get("/:id", getEvent);
+
+// Protected admin routes
+router.post("/", auth, role("admin"), createEvent);
+router.put("/:id", auth, role("admin"), editEvent);
+router.delete("/:id", auth, role("admin"), deleteEvent);
 
 module.exports = router;
+    

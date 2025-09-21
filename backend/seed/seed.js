@@ -1,9 +1,9 @@
-// seed.js
 const mongoose = require("mongoose");
 require("dotenv").config();
 const User = require("../models/User");
 const Event = require("../models/Event");
 const Registration = require("../models/Registration");
+const bcrypt = require("bcryptjs");
 
 async function seed() {
   await mongoose.connect(process.env.MONGO_URI);
@@ -15,81 +15,81 @@ async function seed() {
   const admin = await User.create({
     name: "Admin",
     email: "admin@example.com",
-    password: await require("bcryptjs").hash("Admin@123", 10),
-    role: "admin"
+    password: await bcrypt.hash("Admin@123", 10),
+    role: "admin", // corrected role
+    roll_number: "ADMIN001"
   });
 
+  // Organizer replaced by admin role
   const organizer = await User.create({
     name: "Organizer",
     email: "organizer@example.com",
-    password: await require("bcryptjs").hash("Organizer@123", 10),
-    role: "organizer"
+    password: await bcrypt.hash("Organizer@123", 10),
+    role: "admin", // changed from organizer to admin
+    roll_number: "ADMIN002"
   });
 
   const student1 = await User.create({
     name: "Student One",
     email: "student1@example.com",
-    password: await require("bcryptjs").hash("Student@123", 10),
-    role: "student"
+    password: await bcrypt.hash("Student@123", 10),
+    role: "student",
+    roll_number: "STU001"
   });
 
   const student2 = await User.create({
     name: "Student Two",
     email: "student2@example.com",
-    password: await require("bcryptjs").hash("Student@123", 10),
-    role: "student"
+    password: await bcrypt.hash("Student@123", 10),
+    role: "student",
+    roll_number: "STU002"
   });
 
   const events = await Event.create([
     {
       title: "Orientation",
       description: "Welcome new students!",
-      date: new Date(Date.now()+86400000),
+      date: new Date(Date.now() + 86400000),
       location: "Auditorium",
-      image: "",
+      bannerImage: "",
       capacity: 50,
-      organizer: organizer._id,
-      registrations: []
+      createdBy: organizer._id // changed field name to match Event model
     },
     {
       title: "Hackathon",
       description: "Code for 24 hours!",
-      date: new Date(Date.now()+86400000*2),
+      date: new Date(Date.now() + 86400000 * 2),
       location: "Lab 1",
-      image: "",
+      bannerImage: "",
       capacity: 30,
-      organizer: organizer._id,
-      registrations: []
+      createdBy: organizer._id
     },
     {
       title: "Seminar",
       description: "Tech talks",
-      date: new Date(Date.now()+86400000*3),
+      date: new Date(Date.now() + 86400000 * 3),
       location: "Seminar Hall",
-      image: "",
+      bannerImage: "",
       capacity: 100,
-      organizer: admin._id,
-      registrations: []
+      createdBy: admin._id
     },
     {
       title: "Sports Day",
       description: "Football tournament",
-      date: new Date(Date.now()+86400000*4),
+      date: new Date(Date.now() + 86400000 * 4),
       location: "Field",
-      image: "",
+      bannerImage: "",
       capacity: 40,
-      organizer: admin._id,
-      registrations: []
+      createdBy: admin._id
     },
     {
       title: "Cultural Fest",
       description: "Performances all day",
-      date: new Date(Date.now()+86400000*5),
+      date: new Date(Date.now() + 86400000 * 5),
       location: "Open Ground",
-      image: "",
+      bannerImage: "",
       capacity: 200,
-      organizer: organizer._id,
-      registrations: []
+      createdBy: organizer._id
     }
   ]);
 
@@ -98,3 +98,4 @@ async function seed() {
 }
 
 seed();
+
